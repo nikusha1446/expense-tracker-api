@@ -40,6 +40,62 @@ const createExpense = async (req, res) => {
   }
 };
 
+const getExpenses = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const {
+      category,
+      startDate,
+      endDate,
+      sortBy = 'date',
+      sortOrder = 'desc',
+    } = req.query;
+
+    const where = { userId };
+
+    if (category) {
+      where.category = category.toUpperCase();
+    }
+
+    if (startDate || endDate) {
+      where.date = {};
+      if (startDate) {
+        where.date.gte = new Date(startDate);
+      }
+      if (endDate) {
+        where.date.lte = new Date(endDate);
+      }
+    }
+
+    const orderBy = { [sortBy]: sortOrder };
+
+    const expenses = await prisma.expense.findMany({
+      where,
+      orderBy,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        amount: true,
+        category: true,
+        date: true,
+        createdAt: true,
+      },
+    });
+
+    res.status(200).json({
+      message: 'Expenses retrieved successfully',
+      expenses,
+      total: expenses.length,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createExpense,
+  getExpenses,
 };

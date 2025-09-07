@@ -19,4 +19,30 @@ const createExpenseSchema = Joi.object({
   date: Joi.date().iso().max('now').optional(), // Prevents future dates
 });
 
-module.exports = { createExpenseSchema };
+const getExpensesSchema = Joi.object({
+  category: Joi.string()
+    .valid(
+      'GROCERIES',
+      'LEISURE',
+      'ELECTRONICS',
+      'UTILITIES',
+      'CLOTHING',
+      'HEALTH',
+      'OTHERS'
+    )
+    .insensitive()
+    .optional(),
+  startDate: Joi.date().iso().optional(),
+  endDate: Joi.date()
+    .iso()
+    .when('startDate', {
+      is: Joi.exist(),
+      then: Joi.date().min(Joi.ref('startDate')),
+      otherwise: Joi.date(),
+    })
+    .optional(),
+  sortBy: Joi.string().valid('date', 'amount', 'title', 'createdAt'),
+  sortOrder: Joi.string().valid('asc', 'desc'),
+});
+
+module.exports = { createExpenseSchema, getExpensesSchema };
