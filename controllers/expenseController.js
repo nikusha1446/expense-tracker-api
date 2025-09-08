@@ -121,8 +121,69 @@ const getExpense = async (req, res) => {
   }
 };
 
+const updateExpense = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const { title, description, amount, category, date } = req.body;
+
+    const existingExpense = await prisma.expense.findFirst({
+      where: {
+        userId,
+        id,
+      },
+    });
+
+    if (!existingExpense) {
+      return res.status(404).json({ error: 'Expense not found' });
+    }
+
+    const updateData = {};
+
+    if (title !== undefined) {
+      updateData.title = title.trim();
+    }
+
+    if (description !== undefined) {
+      updateData.description = description ? description.trim() : null;
+    }
+
+    if (amount !== undefined) {
+      updateData.amount = amount;
+    }
+
+    if (category !== undefined) {
+      updateData.category = category.toUpperCase();
+    }
+
+    if (date !== undefined) {
+      updateData.date = new Date(date);
+    }
+
+    const expense = await prisma.expense.update({
+      where: { id },
+      data: updateData,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        amount: true,
+        category: true,
+        date: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    res.status(200).json({ message: 'Expense updated successfully', expense });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createExpense,
   getExpenses,
   getExpense,
+  updateExpense,
 };

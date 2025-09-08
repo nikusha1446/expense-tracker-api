@@ -45,4 +45,27 @@ const getExpensesSchema = Joi.object({
   sortOrder: Joi.string().valid('asc', 'desc'),
 });
 
-module.exports = { createExpenseSchema, getExpensesSchema };
+const updateExpenseSchema = Joi.object({
+  title: Joi.string().min(1).max(255).trim().optional(),
+  description: Joi.string().max(1000).allow('').optional(),
+  amount: Joi.number().precision(2).positive().optional(),
+  category: Joi.string()
+    .valid(
+      'GROCERIES',
+      'LEISURE',
+      'ELECTRONICS',
+      'UTILITIES',
+      'CLOTHING',
+      'HEALTH',
+      'OTHERS'
+    )
+    .insensitive()
+    .optional(),
+  date: Joi.date().iso().max('now').optional(),
+}).min(1);
+
+module.exports = {
+  createExpenseSchema,
+  getExpensesSchema,
+  updateExpenseSchema,
+};
