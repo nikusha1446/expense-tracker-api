@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const createExpenseSchema = Joi.object({
-  title: Joi.string().min(1).max(255).required(),
+  title: Joi.string().min(1).max(255).trim().required(),
   description: Joi.string().max(1000).allow('').optional(),
   amount: Joi.number().precision(2).positive().required(),
   category: Joi.string()
