@@ -10,6 +10,7 @@ const {
   getExpenses,
   getExpense,
   updateExpense,
+  deleteExpense,
 } = require('../controllers/expenseController');
 const authenticateToken = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -20,5 +21,6 @@ router.post('/', validate(createExpenseSchema), createExpense);
 router.get('/', validate(getExpensesSchema, 'query'), getExpenses);
 router.get('/:id', getExpense);
 router.put('/:id', validate(updateExpenseSchema), updateExpense);
+router.delete('/:id', deleteExpense);
 
 module.exports = router;

@@ -181,9 +181,38 @@ const updateExpense = async (req, res) => {
   }
 };
 
+const deleteExpense = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    const existingExpense = await prisma.expense.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!existingExpense) {
+      return res.status(404).json({ error: 'Expense not found' });
+    }
+
+    await prisma.expense.delete({
+      where: {
+        id,
+      },
+    });
+
+    res.status(200).json({ message: 'Expense deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createExpense,
   getExpenses,
   getExpense,
   updateExpense,
+  deleteExpense,
 };
