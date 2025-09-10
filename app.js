@@ -10,7 +10,7 @@ app.use(express.json());
 
 // routes
 app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/expense', expenseRoutes);
+app.use('/api/v1/expenses', expenseRoutes);
 
 // 404 handler
 app.use((req, res) => {
